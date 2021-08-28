@@ -82,4 +82,10 @@ body {
   display: block;
   width: 100%;
 }
+
+@media screen and (max-width: 480px) {
+  .container {
+    border: none;
+  }
+}
 </style>

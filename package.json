@@ -9,6 +9,7 @@
     "backend": "json-server --watch db.json --port 14444"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^1.22.3",
     "core-js": "^3.6.5",
     "json-server": "^0.16.3",
     "sweetalert2": "^11.1.4",
