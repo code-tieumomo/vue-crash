@@ -1,23 +1,29 @@
 <template>
   <div class="container">
-    <Header title="Task Tracker" />
-    <Tasks :tasks="tasks" />
+    <Header @toggle-add-task="toggleAddTask" title="Task Tracker" :showAddTask="showAddTask" />
+    <div v-show="showAddTask">
+      <AddTask @add-task="addTask" />
+    </div>
+    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks" />
   </div>
 </template>
 
 <script>
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
+import AddTask from "./components/AddTask";
 
 export default {
   name: "App",
   components: {
     Header,
-    Tasks
+    Tasks,
+    AddTask
   },
   data() {
     return {
-      tasks: []
+      tasks: [],
+      showAddTask: false
     };
   },
   created() {
@@ -41,6 +47,30 @@ export default {
         reminder: false
       }
     ];
+  },
+  methods: {
+    toggleAddTask() {
+      this.showAddTask = !this.showAddTask;
+    },
+    addTask(task) {
+      this.tasks = [...this.tasks, task];
+    },
+    deleteTask(id) {
+      this.tasks = this.tasks.filter(task => task.id !== id);
+    },
+    toggleReminder(id) {
+      // Way 1
+      this.tasks = this.tasks.map(task => task.id === id ? { ...task, reminder: !task.reminder } : task);
+
+      // Way 2
+      // this.tasks = this.tasks.map(task => {
+      //   if (task.id === id) {
+      //     task.reminder = !task.reminder
+      //   }
+      //
+      //   return task;
+      // });
+    }
   }
 };
 </script>
@@ -52,6 +82,7 @@ export default {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 body {
