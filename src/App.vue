@@ -12,6 +12,7 @@
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
+import Swal from "sweetalert2";
 
 export default {
   name: "App",
@@ -26,41 +27,58 @@ export default {
       showAddTask: false
     };
   },
-  created() {
-    this.tasks = [
-      {
-        id: 1,
-        text: "Task 1",
-        day: "26/08/2021",
-        reminder: true
-      },
-      {
-        id: 2,
-        text: "Task 2",
-        day: "26/08/2021",
-        reminder: true
-      },
-      {
-        id: 3,
-        text: "Task 3",
-        day: "26/08/2021",
-        reminder: false
-      }
-    ];
+  async created() {
+    this.tasks = await this.fetchTasks();
   },
   methods: {
     toggleAddTask() {
       this.showAddTask = !this.showAddTask;
     },
-    addTask(task) {
-      this.tasks = [...this.tasks, task];
+    async addTask(task) {
+      const res = await fetch("api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(task)
+      });
+      const data = await res.json();
+      this.tasks = [...this.tasks, data];
     },
     deleteTask(id) {
-      this.tasks = this.tasks.filter(task => task.id !== id);
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const res = await fetch(`api/tasks/${ id }`, {
+            method: "DELETE"
+          });
+          res.status === 200 ? (this.tasks = this.tasks.filter(task => task.id !== id)) : Swal.fire({
+            icon: "error", title: "Oops...", text: "Please add a task!"
+          });
+        }
+      });
     },
-    toggleReminder(id) {
+    async toggleReminder(id) {
+      const task = await this.fetchTask(id);
+      const updateTask = { ...task, reminder: !task.reminder };
+      const res = await fetch(`api/tasks/${ id }`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(updateTask)
+      });
+      const data = await res.json();
+
       // Way 1
-      this.tasks = this.tasks.map(task => task.id === id ? { ...task, reminder: !task.reminder } : task);
+      this.tasks = this.tasks.map(task => task.id === id ? { ...task, reminder: data.reminder } : task);
 
       // Way 2
       // this.tasks = this.tasks.map(task => {
@@ -70,9 +88,20 @@ export default {
       //
       //   return task;
       // });
+    },
+    async fetchTasks() {
+      const res = await fetch("api/tasks");
+      return res.json();
+    },
+    async fetchTask(id) {
+      const res = await fetch(`api/tasks/${ id }`);
+      const data = await res.json();
+
+      return data;
     }
   }
-};
+}
+;
 </script>
 
 <style>

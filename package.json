@@ -5,10 +5,12 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "backend": "json-server --watch db.json --port 14444"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "json-server": "^0.16.3",
     "sweetalert2": "^11.1.4",
     "vue": "^3.0.0"
   },
