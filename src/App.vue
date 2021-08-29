@@ -50,8 +50,6 @@ body {
   max-width: 600px;
   margin: 30px auto;
   overflow: auto;
-  min-height: 300px;
-  border: 1px solid steelblue;
   padding: 30px;
   border-radius: 5px;
 }
@@ -81,11 +79,5 @@ body {
 .btn-block {
   display: block;
   width: 100%;
-}
-
-@media screen and (max-width: 480px) {
-  .container {
-    border: none;
-  }
 }
 </style>

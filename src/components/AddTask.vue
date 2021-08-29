@@ -7,7 +7,7 @@
     <div class="form-control">
       <label>Day & Time</label>
       <input
-          type="text"
+          type="datetime-local"
           name="day"
           v-model="day"
           placeholder="Add Day & Time"

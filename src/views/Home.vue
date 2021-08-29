@@ -32,7 +32,7 @@ export default {
   async created() {
     this.tasks = await this.fetchTasks();
 
-    supabase.from("tasks").on("UPDATE", () => {
+    supabase.from("tasks").on("*", () => {
       this.refreshTasks();
     }).subscribe();
   },
@@ -41,15 +41,34 @@ export default {
       this.tasks = await this.fetchTasks();
     },
     async addTask(task) {
-      const res = await fetch("api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(task)
-      });
-      const data = await res.json();
-      this.tasks = [...this.tasks, data];
+      const { error, status } = await supabase
+          .from("tasks")
+          .insert([
+            {
+              text: task.text,
+              day: task.day.replace("T", " "),
+              reminder: task.reminder
+            }
+          ]);
+      if (error && status !== 406) {
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong while adding task!"
+        });
+      }
+
+      await this.refreshTasks();
+
+      // const res = await fetch("api/tasks", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-type": "application/json"
+      //   },
+      //   body: JSON.stringify(task)
+      // });
+      // const data = await res.json();
+      // this.tasks = [...this.tasks, data];
     },
     deleteTask(id) {
       Swal.fire({
@@ -62,12 +81,26 @@ export default {
         confirmButtonText: "Yes, delete it!"
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const res = await fetch(`api/tasks/${ id }`, {
-            method: "DELETE"
-          });
-          res.status === 200 ? (this.tasks = this.tasks.filter(task => task.id !== id)) : Swal.fire({
-            icon: "error", title: "Oops...", text: "Something went wrong while deleting task!"
-          });
+          const { error, status } = await supabase
+              .from("tasks")
+              .delete()
+              .eq("id", id);
+          if (error && status !== 406) {
+            await Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong while adding task!"
+            });
+          }
+
+          await this.refreshTasks();
+
+          // const res = await fetch(`api/tasks/${ id }`, {
+          //   method: "DELETE"
+          // });
+          // res.status === 200 ? (this.tasks = this.tasks.filter(task => task.id !== id)) : Swal.fire({
+          //   icon: "error", title: "Oops...", text: "Something went wrong while deleting task!"
+          // });
         }
       });
     },
@@ -78,7 +111,7 @@ export default {
           .update({ reminder: !task[0].reminder })
           .eq("id", id);
       if (error && status !== 406) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           title: "Oops...",
           text: "Something went wrong while updating task!"
@@ -116,7 +149,7 @@ export default {
           .select("*")
           .order("id", { ascending: true });
       if (error && status !== 406) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           title: "Oops...",
           text: "Something went wrong while fetching tasks!"
@@ -133,7 +166,7 @@ export default {
           .select("*")
           .eq("id", id);
       if (error && status !== 406) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           title: "Oops...",
           text: "Something went wrong while fetching task!"
