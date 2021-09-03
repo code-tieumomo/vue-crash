@@ -25,12 +25,12 @@ export default {
     }
   },
   mounted() {
-    if (screen.width > 480) {
+    if (window.innerWidth > 480) {
       alert("⚠ Not support wide screen, please use a device width screen with smaller 480px!");
     }
 
     setInterval(() => {
-      if (screen.width > 480) {
+      if (window.innerWidth > 480) {
         console.warn(
           "%c [Deadline Slayer 🔪] %c ⚠ warning %c\n",
           "background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff",

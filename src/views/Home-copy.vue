@@ -12,7 +12,8 @@ import Swal from "sweetalert2";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://fgczckfbozcbofwksqcz.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzMDE3NDgzOSwiZXhwIjoxOTQ1NzUwODM5fQ.8efUxDeZZe4nOTWFSU7ZZsml6Tqi00Y-XMt_vQat7mo";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzMDE3NDgzOSwiZXhwIjoxOTQ1NzUwODM5fQ.8efUxDeZZe4nOTWFSU7ZZsml6Tqi00Y-XMt_vQat7mo";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default {
@@ -32,24 +33,25 @@ export default {
   async created() {
     this.tasks = await this.fetchTasks();
 
-    supabase.from("tasks").on("*", () => {
-      this.refreshTasks();
-    }).subscribe();
+    supabase
+      .from("tasks")
+      .on("*", () => {
+        this.refreshTasks();
+      })
+      .subscribe();
   },
   methods: {
     async refreshTasks() {
       this.tasks = await this.fetchTasks();
     },
     async addTask(task) {
-      const { error, status } = await supabase
-          .from("tasks")
-          .insert([
-            {
-              text: task.text,
-              day: task.day.replace("T", " "),
-              reminder: task.reminder
-            }
-          ]);
+      const { error, status } = await supabase.from("tasks").insert([
+        {
+          text: task.text,
+          day: task.day.replace("T", " "),
+          reminder: task.reminder
+        }
+      ]);
       if (error && status !== 406) {
         await Swal.fire({
           icon: "error",
@@ -82,9 +84,9 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           const { error, status } = await supabase
-              .from("tasks")
-              .delete()
-              .eq("id", id);
+            .from("tasks")
+            .delete()
+            .eq("id", id);
           if (error && status !== 406) {
             await Swal.fire({
               icon: "error",
@@ -107,9 +109,9 @@ export default {
     async toggleReminder(id) {
       const task = await this.fetchTask(id);
       const { error } = await supabase
-          .from("tasks")
-          .update({ reminder: !task[0].reminder })
-          .eq("id", id);
+        .from("tasks")
+        .update({ reminder: !task[0].reminder })
+        .eq("id", id);
       if (error && status !== 406) {
         await Swal.fire({
           icon: "error",
@@ -145,9 +147,9 @@ export default {
     },
     async fetchTasks() {
       let { data, error } = await supabase
-          .from("tasks")
-          .select("*")
-          .order("id", { ascending: true });
+        .from("tasks")
+        .select("*")
+        .order("id", { ascending: true });
       if (error && status !== 406) {
         await Swal.fire({
           icon: "error",
@@ -162,9 +164,9 @@ export default {
     },
     async fetchTask(id) {
       let { data, error } = await supabase
-          .from("tasks")
-          .select("*")
-          .eq("id", id);
+        .from("tasks")
+        .select("*")
+        .eq("id", id);
       if (error && status !== 406) {
         await Swal.fire({
           icon: "error",
@@ -186,6 +188,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -50,9 +50,6 @@ body {
 .px-3 {
   padding-right: 1rem !important;
 }
-.card .card-body {
-  /* padding: 1.25rem 1.75rem; */
-}
 .card-body {
   flex: 1 1 auto;
   padding: 1rem;
@@ -157,6 +154,7 @@ body {
   font-size: 0.9375rem;
   padding: 0.4rem 0;
   border-bottom: 1px solid #f3f3f3;
+  cursor: pointer;
 }
 .list-wrapper ul li:last-child {
   border-bottom: none;
@@ -183,7 +181,8 @@ body {
 }
 .list-wrapper .completed {
   text-decoration: line-through;
-  text-decoration-color: #3da5f4;
+  text-decoration-color: #52b69a;
+  text-decoration-thickness: 2px;
 }
 .list-wrapper ul li .form-check {
   max-width: 90%;
@@ -224,7 +223,7 @@ body {
 .form-check .form-check-label {
   min-height: 18px;
   display: block;
-  margin-left: 1.75rem;
+  margin-left: 1rem;
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -312,12 +311,12 @@ input[type="checkbox"] {
   left: 0;
 }
 .form-check .form-check-label input[type="checkbox"]:checked + .input-helper:before {
-  background: #405189;
+  background: #52b69a;
   border-width: 0;
 }
 .form-check .form-check-label input[type="checkbox"] + .input-helper:before {
   content: "";
-  width: 21px;
+  width: 10px;
   height: 21px;
   border-radius: 2px;
   border: solid #405189;
