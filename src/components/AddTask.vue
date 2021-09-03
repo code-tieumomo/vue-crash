@@ -6,12 +6,7 @@
     </div>
     <div class="form-control">
       <label>Day & Time</label>
-      <input
-          type="datetime-local"
-          name="day"
-          v-model="day"
-          placeholder="Add Day & Time"
-      />
+      <input type="datetime-local" name="day" v-model="day" placeholder="Add Day & Time" />
     </div>
     <div class="form-control form-control-check">
       <input type="checkbox" name="reminder" v-model="reminder" />
@@ -24,6 +19,7 @@
 
 <script>
 import Swal from "sweetalert2";
+import moment from "moment";
 
 export default {
   name: "AddTask",
@@ -33,6 +29,10 @@ export default {
       day: "",
       reminder: false
     };
+  },
+  mounted() {
+    moment.locale("vi");
+    console.log(moment().format("LLLL"));
   },
   methods: {
     clear() {
@@ -98,12 +98,12 @@ export default {
   flex: 1;
 }
 
-.form-control-check input:not([type=checkbox]) {
+.form-control-check input:not([type="checkbox"]) {
   flex: 2;
   height: 20px;
 }
 
-.form-control-check input[type=checkbox] {
+.form-control-check input[type="checkbox"] {
   height: 20px;
   width: 20px;
 }

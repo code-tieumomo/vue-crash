@@ -2,4 +2,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-createApp(App).use(router).mount("#app");
+// Global css
+import "./assets/global.css";
+
+createApp(App)
+  .use(router)
+  .mount("#app");
