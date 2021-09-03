@@ -36,6 +36,7 @@
                   class="form-control todo-list-input"
                   placeholder="What do you need to do today?"
                   v-model="todoText"
+                  @keyup.enter="onSubmit"
                   required
                 />
                 <button class="add btn btn-primary font-weight-bold todo-list-add-btn" @click="onSubmit">Add</button>
