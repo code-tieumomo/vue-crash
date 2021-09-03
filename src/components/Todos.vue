@@ -5,7 +5,7 @@
         <div class="col-md-12">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">📑 Awesome Todo list</h4>
+              <h4 class="card-title">--- 📑 Awesome Todo list ---</h4>
 
               <div class="list-wrapper">
                 <ul class="d-flex flex-column todo-list">
