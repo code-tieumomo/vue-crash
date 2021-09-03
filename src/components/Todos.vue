@@ -5,16 +5,17 @@
         <div class="col-md-12">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">--- 📑 Awesome Todo list ---</h4>
+              <h4 class="card-title">--- 📑 Awesome Todos list ---</h4>
               <span>Today: {{ today }}</span>
 
               <div class="list-wrapper">
                 <ul class="d-flex flex-column todo-list">
                   <li
-                    v-for="(todo, index) in todos"
-                    :key="index"
+                    v-for="(todo, id) in todos"
+                    :key="id"
                     :class="{ completed: todo.is_finished }"
-                    @click.prevent="onViewDetail"
+                    @click.prevent
+                    @dblclick.stop.prevent="onToggleStatus(todo.id, todo.is_finished)"
                   >
                     <div class="form-check">
                       <label class="form-check-label">
@@ -23,14 +24,21 @@
                         <i class="input-helper"></i>
                       </label>
                     </div>
-                    <i class="remove mdi mdi-close-circle-outline" @click.stop.prevent="onQuickRemove"></i>
+                    <i class="remove mdi mdi-close-circle-outline" @click.stop.prevent="onViewDetail(todo.id)"></i>
+                    <i class="remove mdi mdi-close-circle-outline" @click.stop.prevent="onQuickRemove(todo.id)"></i>
                   </li>
                 </ul>
               </div>
 
               <div class="add-items d-flex">
-                <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?" />
-                <button class="add btn btn-primary font-weight-bold todo-list-add-btn">Add</button>
+                <input
+                  type="text"
+                  class="form-control todo-list-input"
+                  placeholder="What do you need to do today?"
+                  v-model="todoText"
+                  required
+                />
+                <button class="add btn btn-primary font-weight-bold todo-list-add-btn" @click="onSubmit">Add</button>
               </div>
             </div>
           </div>
@@ -55,25 +63,89 @@ export default {
   data() {
     return {
       today: moment().format("MMMM Do YYYY"),
-      todos: []
+      todos: [],
+      todoText: ""
     };
   },
   async created() {
     this.todos = await this.fetchTodos();
 
     supabase
-      .from("rodos")
+      .from("todos")
       .on("*", () => {
         this.refreshTodos();
       })
       .subscribe();
   },
   methods: {
-    onViewDetail() {
-      console.log("Clicked");
+    onViewDetail(id) {
+      console.log("Clicked on " + id);
     },
-    onQuickRemove() {
-      console.log("Removed");
+    async onToggleStatus(id, is_finished) {
+      const { error } = await supabase
+        .from("todos")
+        .update({ is_finished: !is_finished })
+        .eq("id", id);
+      if (error && status !== 406) {
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong while toggling finished status!"
+        });
+      }
+    },
+    onQuickRemove(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "green",
+        cancelButtonColor: "red",
+        confirmButtonText: "Yes, remove it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const { error, status } = await supabase
+            .from("todos")
+            .delete()
+            .eq("id", id);
+          if (error && status !== 406) {
+            await Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong while removing todo!"
+            });
+          }
+        }
+      });
+    },
+    async onSubmit() {
+      if (this.todoText.trim().length == 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Todo can not empty!"
+        });
+
+        return false;
+      }
+
+      const { error, status } = await supabase.from("todos").insert([
+        {
+          text: this.todoText,
+          day: this.today,
+          is_finished: false
+        }
+      ]);
+      if (error && status !== 406) {
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong while adding task!"
+        });
+      } else {
+        this.todoText = "";
+      }
     },
     async fetchTodos() {
       let { data, error } = await supabase
